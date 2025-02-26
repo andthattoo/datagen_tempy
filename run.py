@@ -30,8 +30,7 @@ async def main():
         instructions = json.load(f)
 
     # Process in smaller batches with fewer concurrent requests
-    batch_size = 5  # Try a smaller batch size
-    instructions = instructions[:10]
+    batch_size = 16  # Try a smaller batch size
     total_instructions = len(instructions)
 
     run_llm = LLM()
@@ -68,15 +67,7 @@ async def main():
                     ans = parse(answer)
                     gold = parse(instruction["gold"])
                     label = verify(gold, ans)
-                    print({
-                            "instruction": instruction["instruction"],
-                            "completion": completion,
-                            "answer": str(ans),
-                            "model": model_name,
-                            "gold": instruction["gold"],
-                            "label": str(int(label)),
-                            "uuid": file_uuid,
-                        })
+
                     data = json.dumps(
                         {
                             "instruction": instruction["instruction"],
