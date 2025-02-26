@@ -6,6 +6,7 @@ from tqdm import tqdm
 import uuid
 from pydantic import BaseModel
 
+
 class Output(BaseModel):
     instruction: str
     reasoning: str
@@ -14,6 +15,7 @@ class Output(BaseModel):
     gold: str
     label: bool
     uuid: str
+
 
 model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 
@@ -25,38 +27,37 @@ async def main():
 
     with open("instructions.json", "r") as f:
         instructions = json.load(f)
-    # Process in batches
-    batch_size = 4
+
+    # Process in smaller batches with fewer concurrent requests
+    batch_size = 2  # Try a smaller batch size
     instructions = instructions[:10]
     total_instructions = len(instructions)
 
     run_llm = LLM()
 
-    # Overall progress bar
-    overall_progress = tqdm(total=total_instructions, desc="Overall Progress", position=0)
-
+    # Use a simpler progress tracking approach
     for i in range(0, total_instructions, batch_size):
         # Calculate actual batch size (might be smaller for the last batch)
         current_batch_size = min(batch_size, total_instructions - i)
         batch = instructions[i:i + current_batch_size]
         send_batch = [{"model_name": model_name, "user_query": b["instruction"]} for b in batch]
-        # Create a specific progress bar for this batch
-        batch_desc = f"Batch {i // batch_size + 1}/{(total_instructions + batch_size - 1) // batch_size}"
-        with tqdm(total=current_batch_size, desc=batch_desc, position=1, leave=False) as batch_progress:
 
-            completions = await run_llm.get_completions_batch(send_batch)
-            print(completions[0])
+        print(f"Processing batch {i // batch_size + 1}/{(total_instructions + batch_size - 1) // batch_size}")
 
-            # Save each completion to its own file using the uuid from instructions
+        try:
+            # Add a timeout to the gather operation
+            completions = await asyncio.wait_for(
+                run_llm.get_completions_batch(send_batch),
+                timeout=60  # 60 second timeout
+            )
+
+            # Process the completions
             for j, completion in enumerate(completions):
-                if i + j < total_instructions:  # Safety check
+                if i + j < total_instructions:
                     instruction = batch[j]
 
-                    # Extract UUID from instruction or generate one if not present
-                    if "uuid" in instruction:
-                        file_uuid = instruction["uuid"]
-                    else:
-                        file_uuid = str(uuid.uuid4())
+                    # Extract UUID from instruction or generate one
+                    file_uuid = instruction.get("uuid", str(uuid.uuid4()))
 
                     # Create filename and save
                     filename = f"{file_uuid}.md"
@@ -65,10 +66,17 @@ async def main():
                     with open(filepath, "w") as f:
                         f.write(completion)
 
-                    batch_progress.update(1)
-                    overall_progress.update(1)
+                    print(f"Saved completion {i + j + 1}/{total_instructions}")
 
-    overall_progress.close()
+        except asyncio.TimeoutError:
+            print(f"Batch {i // batch_size + 1} timed out after 60 seconds")
+        except Exception as e:
+            print(f"Error processing batch: {e}")
+
+        # Add a small delay between batches to prevent overloading the server
+        if i + batch_size < total_instructions:
+            await asyncio.sleep(1)
+
     print("\nAll batches processed and saved")
 
 
