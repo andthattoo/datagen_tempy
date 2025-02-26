@@ -1,14 +1,17 @@
 from openai import AsyncOpenAI
 import asyncio
 import os
-from dotenv import load_dotenv
-from typing import Optional
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+# Load environment variables from .env file
+load_dotenv(find_dotenv())
+
 VLLM_URL = "http://localhost:8000/v1"
 VLLM_API_KEY = "api_key"
 
-# Initialize OpenAI clients for each provider
+OPENROUTER_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
 
 class LLM:
     def __init__(self):
@@ -20,30 +23,24 @@ class LLM:
     ) -> str:
         """
         Get a completion from a model for a given provider.
-
-        Args:
-            model_name: The name of the model to use
-            provider: The provider to use
-            system_prompt: The system prompt to use
-            user_query: The user query to use
-
-        Returns:
-            The completion from the model
         """
-
-        # Create the messages for the chat completion
-
         messages = [
             {"role": "user", "content": user_query},
         ]
 
-        # Make the API call to get the completion
-        response = await self.client.chat.completions.create(
-            model=model_name, messages=messages, temperature=0.0, max_tokens=2048
-        )
-
-        # Extract and return the assistant's reply
-        return response.choices[0].message.content
+        # Add error handling for API requests
+        try:
+            response = await self.client.chat.completions.create(
+                model=model_name,
+                messages=messages,
+                temperature=0.0,
+                max_tokens=2048,
+                timeout=60.0  # Add a timeout to prevent hanging
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error during API call: {e}")
+            return f"Error occurred: {str(e)}"
 
     async def get_completions_batch(self, requests):
         tasks = []
