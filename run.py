@@ -5,6 +5,7 @@ import os
 from tqdm import tqdm
 import uuid
 from pydantic import BaseModel
+from math_verify import parse, verify
 
 
 class Output(BaseModel):
@@ -29,7 +30,7 @@ async def main():
         instructions = json.load(f)
 
     # Process in smaller batches with fewer concurrent requests
-    batch_size = 2  # Try a smaller batch size
+    batch_size = 5  # Try a smaller batch size
     instructions = instructions[:10]
     total_instructions = len(instructions)
 
@@ -51,7 +52,6 @@ async def main():
                 timeout=60  # 60 second timeout
             )
 
-            print("ahoooyyy")
             # Process the completions
             for j, completion in enumerate(completions):
                 if i + j < total_instructions:
@@ -64,6 +64,22 @@ async def main():
                     filename = f"{file_uuid}.md"
                     filepath = os.path.join(data_dir, filename)
 
+                    answer = completion if "</think>" not in completion else completion.split("</think>")[1]
+                    ans = parse(answer)
+                    gold = parse(instruction["gold"])
+                    label = verify(gold, ans)
+
+                    data = json.dumps(
+                        {
+                            "instruction": instruction["instruction"],
+                            "completion": completion,
+                            "answer": instruction["answer"],
+                            "model": model_name,
+                            "gold": instruction["gold"],
+                            "label": label,
+                            "uuid": file_uuid,
+                        }
+                    )
                     with open(filepath, "w") as f:
                         f.write(completion)
 
