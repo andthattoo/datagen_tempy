@@ -73,10 +73,10 @@ async def main():
                         {
                             "instruction": instruction["instruction"],
                             "completion": completion,
-                            "answer": ans,
+                            "answer": str(ans),
                             "model": model_name,
                             "gold": instruction["gold"],
-                            "label": label,
+                            "label": str(int(label)),
                             "uuid": file_uuid,
                         }, indent=2
                     )
