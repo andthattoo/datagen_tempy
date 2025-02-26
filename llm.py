@@ -39,7 +39,7 @@ class LLM:
 
         # Make the API call to get the completion
         response = await self.client.chat.completions.create(
-            model=model_name, messages=messages, temperature=0.0
+            model=model_name, messages=messages, temperature=0.0, max_tokens=1024
         )
 
         # Extract and return the assistant's reply
