@@ -78,10 +78,10 @@ async def main():
                             "gold": instruction["gold"],
                             "label": label,
                             "uuid": file_uuid,
-                        }
+                        }, indent=2
                     )
                     with open(filepath, "w") as f:
-                        f.write(completion)
+                        f.write(data)
 
                     print(f"Saved completion {i + j + 1}/{total_instructions}")
 
