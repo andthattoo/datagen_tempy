@@ -51,6 +51,7 @@ async def main():
                 timeout=60  # 60 second timeout
             )
 
+            print("ahoooyyy")
             # Process the completions
             for j, completion in enumerate(completions):
                 if i + j < total_instructions:
