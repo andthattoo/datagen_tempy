@@ -68,7 +68,15 @@ async def main():
                     ans = parse(answer)
                     gold = parse(instruction["gold"])
                     label = verify(gold, ans)
-
+                    print({
+                            "instruction": instruction["instruction"],
+                            "completion": completion,
+                            "answer": str(ans),
+                            "model": model_name,
+                            "gold": instruction["gold"],
+                            "label": str(int(label)),
+                            "uuid": file_uuid,
+                        })
                     data = json.dumps(
                         {
                             "instruction": instruction["instruction"],
