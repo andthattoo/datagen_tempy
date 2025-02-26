@@ -73,7 +73,7 @@ async def main():
                         {
                             "instruction": instruction["instruction"],
                             "completion": completion,
-                            "answer": instruction["answer"],
+                            "answer": ans,
                             "model": model_name,
                             "gold": instruction["gold"],
                             "label": label,
