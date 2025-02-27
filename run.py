@@ -30,7 +30,7 @@ async def main():
         instructions = json.load(f)
 
     # Process in smaller batches with fewer concurrent requests
-    batch_size = 1 # Try a smaller batch size
+    batch_size = 4 # Try a smaller batch size
     total_instructions = len(instructions)
 
     run_llm = LLM()
