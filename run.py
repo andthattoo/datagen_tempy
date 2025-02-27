@@ -1,4 +1,4 @@
-from llm_deepseek import DeepseekLLM
+from llm import LLM
 import json
 import asyncio
 import os
@@ -50,7 +50,7 @@ async def main():
     total_instructions = len(instructions)
     print(f"Total instructions to process: {total_instructions}")
 
-    run_llm = DeepseekLLM()
+    run_llm = LLM()
 
     # Use a simpler progress tracking approach
     for i in range(0, total_instructions, batch_size):
