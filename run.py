@@ -18,7 +18,7 @@ class Output(BaseModel):
     uuid: str
 
 
-model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
 
 
 async def main():
@@ -30,7 +30,7 @@ async def main():
         instructions = json.load(f)
 
     # Process in smaller batches with fewer concurrent requests
-    batch_size = 8  # Try a smaller batch size
+    batch_size = 16  # Try a smaller batch size
     total_instructions = len(instructions)
 
     run_llm = LLM()
