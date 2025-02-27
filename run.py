@@ -18,7 +18,7 @@ class Output(BaseModel):
     uuid: str
 
 
-model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
 
 
 async def main():
