@@ -34,7 +34,7 @@ class LLM:
                 model=model_name,
                 messages=messages,
                 temperature=0.6,
-                max_tokens=4096,
+                max_tokens=4048,
                 timeout=60.0  # Add a timeout to prevent hanging
             )
             return response.choices[0].message.content
