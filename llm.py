@@ -33,7 +33,7 @@ class LLM:
             response = await self.client.chat.completions.create(
                 model=model_name,
                 messages=messages,
-                temperature=0.0,
+                temperature=0.6,
                 max_tokens=4096,
                 timeout=60.0  # Add a timeout to prevent hanging
             )
