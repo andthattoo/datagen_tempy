@@ -2,14 +2,14 @@ import os
 import json
 import glob
 from datasets import Dataset, DatasetDict
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, login
 import pandas as pd
 
 
 def collect_md_files_and_push_to_hf():
     # Configuration
     dataset_name = "andthattoo/router-r1-1.5b-5k"
-    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
     data_dir = os.path.join("data", model_name)
 
     print(f"Looking for .md files in {data_dir}")
@@ -61,8 +61,7 @@ def collect_md_files_and_push_to_hf():
 
     # Push to HuggingFace
     dataset_dict.push_to_hub(
-        dataset_name,
-        token=os.environ.get("HF_TOKEN"),  # Make sure you have set HF_TOKEN in your environment
+        dataset_name,# Make sure you have set HF_TOKEN in your environment
         private=False
     )
 
@@ -83,4 +82,5 @@ def collect_md_files_and_push_to_hf():
 
 
 if __name__ == "__main__":
+    login()
     collect_md_files_and_push_to_hf()
