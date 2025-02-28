@@ -1,0 +1,23 @@
+========================
+
+Install miniconda using:
+
+> wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+> bash Miniconda3-latest-Linux-x86_64.sh
+
+create a new environment with python 3.11
+> conda create -n py11 python=3.11
+
+activate the environment
+> conda activate py11
+
+install the required packages
+> pip install math_verify datasets vllm
+
+========================
+
+Run the vllm:
+> nohup vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-14B --tensor-parallel-size 8 > vllm.log 2>&1 &
+
+Then, run the following to generate data:
+> python run.py --model_name deepseek-ai/DeepSeek-R1-Distill-Qwen-14B batch_size 32
