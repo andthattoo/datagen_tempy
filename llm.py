@@ -35,7 +35,7 @@ class LLM:
                 messages=messages,
                 temperature=0.6,
                 max_tokens=8192,
-                timeout=250.0  # Add a timeout to prevent hanging
+                timeout=300.0  # Add a timeout to prevent hanging
             )
             return response.choices[0].message.content
         except Exception as e:
