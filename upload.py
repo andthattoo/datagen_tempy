@@ -8,8 +8,8 @@ import pandas as pd
 
 def collect_md_files_and_push_to_hf():
     # Configuration
-    dataset_name = "andthattoo/router-r1-14b-5k"
-    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+    dataset_name = "andthattoo/router-r1-7b-5k"
+    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
     data_dir = os.path.join("data", model_name)
 
     print(f"Looking for .md files in {data_dir}")
