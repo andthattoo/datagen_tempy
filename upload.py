@@ -4,14 +4,30 @@ import glob
 from datasets import Dataset, DatasetDict
 from huggingface_hub import HfApi, login
 import pandas as pd
+import argparse
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Collect markdown files and push to Hugging Face')
+    parser.add_argument('--dataset_name', type=str, default="andthattoo/router-r1-7b-5k",
+                        help='Name of the dataset on Hugging Face (default: andthattoo/router-r1-7b-5k)')
+    parser.add_argument('--model_name', type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+                        help='Name of the model used to generate the data (default: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B)')
+    return parser.parse_args()
 
 
 def collect_md_files_and_push_to_hf():
-    # Configuration
-    dataset_name = "andthattoo/router-r1-7b-5k"
-    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-    data_dir = os.path.join("data", model_name.split("/")[-1])
+    # Parse command-line arguments
+    args = parse_arguments()
+    dataset_name = args.dataset_name
+    model_name = args.model_name
 
+    # Extract model short name for the directory
+    model_short_name = model_name.split("/")[-1]
+    data_dir = os.path.join("data", model_short_name)
+
+    print(f"Model: {model_name}")
+    print(f"Dataset destination: {dataset_name}")
     print(f"Looking for .md files in {data_dir}")
 
     # Get all .md files in the directory
@@ -61,7 +77,7 @@ def collect_md_files_and_push_to_hf():
 
     # Push to HuggingFace
     dataset_dict.push_to_hub(
-        dataset_name,# Make sure you have set HF_TOKEN in your environment
+        dataset_name,  # Make sure you have set HF_TOKEN in your environment
         private=False
     )
 
@@ -71,7 +87,7 @@ def collect_md_files_and_push_to_hf():
     api = HfApi(token=os.environ.get("HF_TOKEN"))
     api.upload_file(
         path_or_fileobj=bytes(json.dumps({
-            "tags": ["math", f"{model_name}"]
+            "tags": ["math", model_short_name]
         }, indent=2).encode("utf-8")),
         path_in_repo=".tags",
         repo_id=dataset_name,
